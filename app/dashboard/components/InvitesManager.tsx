@@ -76,6 +76,9 @@ export function InvitesManager() {
         ) : null}
         {filtered.map((g) => {
           const table = state.tables.find((t) => t.id === g.tableId);
+          const hotesseInvite = table?.hotesseInviteId
+            ? state.invites.find((inv) => inv.id === table.hotesseInviteId)
+            : null;
           const hotesseTablesCount = state.tables.filter(
             (t) => t.hotesseInviteId === g.id,
           ).length;
@@ -114,9 +117,34 @@ export function InvitesManager() {
                     </span>
                   ) : null}
                 </p>
-                <p className="mt-0.5 text-[11px] text-amber-100/60">
-                  {table ? `Table ${table.nom}` : "Sans table"}
-                  {g.estPresent ? " · Présent" : ""}
+                <p className="mt-0.5 flex flex-wrap items-baseline gap-x-1 gap-y-0.5 text-[11px] text-amber-100/55">
+                  {table ? (
+                    <>
+                      <span>Table</span>
+                      <span className="font-semibold text-amber-200">
+                        {table.nom}
+                      </span>
+                    </>
+                  ) : (
+                    <span>Sans table</span>
+                  )}
+                  {hotesseInvite ? (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span>Hôtesse</span>
+                      <span className="font-semibold text-amber-200">
+                        {hotesseInvite.nom}
+                      </span>
+                    </>
+                  ) : null}
+                  {g.estPresent ? (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span className="font-medium text-emerald-300/90">
+                        Présent
+                      </span>
+                    </>
+                  ) : null}
                 </p>
               </div>
               <div className="flex items-center gap-1">

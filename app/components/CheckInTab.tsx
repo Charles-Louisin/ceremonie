@@ -89,7 +89,7 @@ export function CheckInTab() {
       <footer className="mt-auto pt-4 text-center text-xs uppercase tracking-[0.25em] text-amber-200/60">
         <span className="font-semibold text-amber-200">{totalPresents}</span>
         <span className="mx-1 text-amber-200/50">/</span>
-        <span>{total} lauréats confirmés</span>
+        <span>{total} invités confirmés</span>
       </footer>
     </section>
   );
@@ -146,12 +146,43 @@ function InviteRow({ invite, onToggle }: RowProps) {
         </div>
         <p
           className={[
-            "mt-0.5 text-xs",
-            invite.estPresent ? "text-amber-800/80" : "text-amber-100/60",
+            "mt-0.5 flex flex-wrap items-baseline gap-x-1 gap-y-0.5 text-xs",
+            invite.estPresent ? "text-amber-800/75" : "text-amber-100/55",
           ].join(" ")}
         >
-          {table ? `Table ${table.nom}` : "Sans table"}
-          {hotesse ? ` · Hôtesse : ${hotesse.nom}` : ""}
+          {table ? (
+            <>
+              <span>Table</span>
+              <span
+                className={
+                  invite.estPresent
+                    ? "font-semibold text-amber-950"
+                    : "font-semibold text-amber-200"
+                }
+              >
+                {table.nom}
+              </span>
+            </>
+          ) : (
+            <span className={invite.estPresent ? "text-amber-800/70" : ""}>
+              Sans table
+            </span>
+          )}
+          {hotesse ? (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>Hôtesse</span>
+              <span
+                className={
+                  invite.estPresent
+                    ? "font-semibold text-amber-950"
+                    : "font-semibold text-amber-200"
+                }
+              >
+                {hotesse.nom}
+              </span>
+            </>
+          ) : null}
         </p>
       </div>
       <div className="flex flex-col items-end gap-1">

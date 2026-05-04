@@ -253,18 +253,22 @@ interface SeatIconProps {
 }
 
 function SeatIcon({ x, y, present, hasGuest }: SeatIconProps) {
-  const color = present ? "#d97706" : hasGuest ? "#94a3b8" : "#64748b";
+  const color = present
+    ? "#d97706"
+    : hasGuest
+      ? "#64748b"
+      : "#57534e";
   const filter = present ? "drop-shadow(0 0 3px rgba(217, 119, 6, 0.4))" : undefined;
   return (
     <motion.g
       initial={false}
-      animate={{ opacity: hasGuest ? 1 : 0.5 }}
-      transition={{ duration: 0.3 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
       style={{ transform: `translate(${x - 9}px, ${y - 9}px)`, filter }}
     >
       <foreignObject width="18" height="18">
         <div style={{ width: 18, height: 18, color }}>
-          <User strokeWidth={2.2} size={18} />
+          <User strokeWidth={hasGuest ? 2.2 : 2.35} size={18} />
         </div>
       </foreignObject>
     </motion.g>

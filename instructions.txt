@@ -1,0 +1,73 @@
+
+# Cahier des Charges : Application "Gala de Remise de Médailles"
+## 1. Objectif du Projet
+Transformer l'accueil physique d'un événement de prestige en une expérience fluide et numérique. L'application doit permettre un check-in rapide à l'entrée et offrir une vue globale et stylisée de l'occupation de la salle en temps réel.
+## 2. Spécifications Techniques
+ * **Framework :** Next.js (App Router) avec TypeScript.
+ * **Style :** Tailwind CSS (Mobile-first).
+ * **Base de données :** MongoDB (via Mongoose ou Prisma).
+ * **Hébergement :** Vercel (pour une latence minimale).
+ * **Performance :** Chargement initial de la data au "Root" pour une navigation instantanée (zéro loading) entre les deux onglets.
+## 3. Identité Visuelle (Design System)
+### Ambiance & Couleurs
+L'esthétique doit évoquer le prestige, le luxe et le caractère officiel d'une remise de décoration.
+ * **Fond (Background) :** Noir profond ou Bleu nuit (bg-slate-950).
+ * **Accents (Or) :** Utilisation d'un dégradé de dorés (from-amber-200 via-yellow-500 to-amber-700).
+ * **États inactifs :** Gris anthracite (text-slate-700) ou ardoise (border-slate-800).
+ * **Typographie :**
+   * Titres : *Playfair Display* ou *Cinzel* (Sérif élégant).
+   * Données : *Inter* ou *Montserrat* (Sans-sérif moderne et lisible).
+### Éléments Graphiques
+ * **Bordures :** Fines, avec un effet de lueur dorée (shadow-[0_0_15px_rgba(251,191,36,0.1)]).
+ * **Boutons :** Verre dépoli (Glassmorphism) avec contours dorés.
+## 4. Architecture Fonctionnelle
+### A. Navigation (Système d'onglets)
+Un menu fixe en haut ou en bas avec deux sections :
+ 1. **L'Entrée (Check-in) :** Interface de recherche et validation.
+ 2. **La Salle (Visualisation) :** Vue d'ensemble des 17 tables.
+### B. Onglet 1 : Recherche & Check-in
+ * **Barre de recherche :** Un champ large, centré, avec un placeholder "Chercher un invité...".
+ * **Résultats instantanés :** Une liste filtrée s'affiche sous la barre à chaque lettre tapée.
+ * **Fiche Invité :**
+   * Nom de l'invité (en majuscules, doré).
+   * Nom de la Table.
+   * Nom de l'Hôtesse responsable.
+ * **Action :** Un interrupteur (Toggle) stylisée pour "Marquer présent".
+   * *Feedback visuel :* Une petite pluie de particules dorées lors de la validation.
+### C. Onglet 2 : Visualisation de la Salle (Le Dashboard)
+C'est la pièce maîtresse visuelle.
+ * **Grille de Tables :** Affichage de 17 cartes (Cards).
+ * **Le Dessin de Table (SVG) :**
+   * **La Table :** Un cercle central contenant le nom (ex: "NSAN").
+   * **Les Bonhommes (Sièges) :** 8 icônes de silhouettes (User de Lucide-React) disposées circulairement autour de la table.
+ * **Dynamique des Couleurs :**
+   * **Siège Vide :** Silhouette gris anthracite terne (fill-slate-800).
+   * **Siège Occupé :** Silhouette dorée lumineuse (fill-amber-500 avec un léger glow).
+   * **État de la Table :** Si au moins une personne est présente, le contour de la table passe du gris à l'or. Si la table est complète (8/8), elle brille intensément.
+ * **Détails au survol/clic :** En cliquant sur une table, on voit la liste des noms des 8 personnes (ceux présents en couleur, les manquants en gris).
+## 5. Structure de la Base de Données (MongoDB)
+```json
+{
+  "invité": {
+    "nom": "String",
+    "table_id": "ObjectId",
+    "estPresent": "Boolean",
+    "heureArrivee": "DateTime"
+  },
+  "table": {
+    "numero": "Number",
+    "capacite": 8,
+    "hotesse": "String"
+  }
+}
+
+```
+## 6. Détails du Design de la Table (Focus Technique)
+Pour que ce soit "stylé" sans images :
+ 1. Chaque table est un composant TableComponent.
+ 2. L'index de l'invité (1 à 8) détermine sa position absolue (ex: 0°, 45°, 90°, etc.) autour du cercle central.
+ 3. Utilisation de framer-motion pour que les bonhommes changent de couleur avec un fondu fluide (transition de 0.3s) dès que le statut change dans la base de données.
+## 7. Contraintes d'Utilisation
+ * **Rapidité :** La recherche doit être insensible à la casse et aux accents.
+ * **Simplicité :** L'hôtesse à l'entrée ne doit pas faire plus de 2 clics pour valider une présence.
+ * **Visibilité :** Sur mobile, les 17 tables doivent être disposées en deux colonnes très lisible avec un scroll fluide.

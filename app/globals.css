@@ -1,26 +1,209 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-night: #020617;
+  --color-night-soft: #0a0f1f;
+  --color-night-card: #0c1226;
+  --color-gold-50: #fffbe6;
+  --color-gold-200: #fde68a;
+  --color-gold-400: #facc15;
+  --color-gold-500: #eab308;
+  --color-gold-700: #b45309;
+  --font-display: var(--font-cinzel);
+  --font-body: var(--font-inter);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  color-scheme: dark;
+  --background: #020617;
+  --foreground: #f1f5f9;
 }
 
+html,
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  letter-spacing: 0.01em;
+}
+
+body {
+  background-image:
+    radial-gradient(1200px 600px at 20% 0%, rgba(217, 119, 6, 0.04), transparent 65%),
+    radial-gradient(900px 500px at 100% 100%, rgba(99, 102, 241, 0.04), transparent 65%),
+    radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.018) 1px, transparent 1px),
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.012) 1px, transparent 1px);
+  background-size: auto, auto, 220px 220px, 320px 320px;
+  background-attachment: fixed;
+  background-color: #020617;
+}
+
+/* Police d'affichage : titres */
+.font-display {
+  font-family: var(--font-cinzel), "Playfair Display", ui-serif, Georgia, serif;
+  letter-spacing: 0.08em;
+}
+
+/* Dégradé doré reusable — version assourdie */
+.text-gold-gradient {
+  background-image: linear-gradient(135deg, #fde68a 0%, #d97706 55%, #78350f 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-gold-gradient {
+  background-image: linear-gradient(135deg, #fde68a 0%, #d97706 55%, #78350f 100%);
+}
+
+/* Glassmorphism doré (boutons, cartes) */
+.glass-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0%, rgba(255, 255, 255, 0.008) 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(217, 119, 6, 0.10);
+  box-shadow: 0 0 12px rgba(217, 119, 6, 0.03), inset 0 1px 0 rgba(255, 255, 255, 0.025);
+}
+
+.glass-card-strong {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.012) 100%);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(217, 119, 6, 0.20);
+  box-shadow: 0 0 16px rgba(217, 119, 6, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+.gold-glow {
+  box-shadow: 0 0 12px rgba(217, 119, 6, 0.10);
+}
+
+.gold-glow-strong {
+  box-shadow: 0 0 22px rgba(217, 119, 6, 0.20), 0 0 5px rgba(217, 119, 6, 0.18) inset;
+}
+
+/* Scroll élégant */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(217, 119, 6, 0.3), rgba(120, 53, 15, 0.35));
+  border-radius: 999px;
+  border: 2px solid #020617;
+}
+
+/* Animation : étincelle dorée pour la confirmation */
+@keyframes goldenSparkle {
+  0% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.sparkle {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: radial-gradient(circle, #fde68a, #92400e);
+  animation: goldenSparkle 900ms ease-out forwards;
+  pointer-events: none;
+}
+
+/* Champ de formulaire stylé */
+.luxe-input {
+  width: 100%;
+  background: rgba(2, 6, 23, 0.6);
+  color: #f1f5f9;
+  border: 1px solid rgba(217, 119, 6, 0.18);
+  border-radius: 12px;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  outline: none;
+  transition: border-color 150ms ease, box-shadow 150ms ease, background 150ms ease;
+}
+.luxe-input::placeholder {
+  color: rgba(241, 245, 249, 0.35);
+}
+.luxe-input:focus {
+  border-color: rgba(217, 119, 6, 0.5);
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.10);
+  background: rgba(12, 18, 38, 0.85);
+}
+
+/* Bouton doré "verre dépoli" — adouci */
+.btn-gold {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #1a1206;
+  background-image: linear-gradient(135deg, #fde68a 0%, #d97706 55%, #78350f 100%);
+  border: 1px solid rgba(120, 53, 15, 0.45);
+  box-shadow: 0 0 14px rgba(217, 119, 6, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: transform 120ms ease, box-shadow 200ms ease, filter 200ms ease;
+  cursor: pointer;
+}
+.btn-gold:hover {
+  filter: brightness(1.04);
+  box-shadow: 0 0 22px rgba(217, 119, 6, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.btn-gold:active {
+  transform: translateY(1px);
+}
+.btn-gold:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  font-weight: 500;
+  color: #fde68a;
+  background: rgba(2, 6, 23, 0.6);
+  border: 1px solid rgba(217, 119, 6, 0.22);
+  transition: background 150ms ease, border-color 150ms ease;
+  cursor: pointer;
+}
+.btn-ghost:hover {
+  background: rgba(12, 18, 38, 0.85);
+  border-color: rgba(217, 119, 6, 0.45);
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  font-weight: 500;
+  color: #fecaca;
+  background: rgba(127, 29, 29, 0.20);
+  border: 1px solid rgba(239, 68, 68, 0.22);
+  transition: background 150ms ease;
+  cursor: pointer;
+}
+.btn-danger:hover {
+  background: rgba(127, 29, 29, 0.4);
 }

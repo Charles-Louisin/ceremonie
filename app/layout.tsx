@@ -4,7 +4,7 @@ import "./globals.css";
 import { GalaProvider } from "./lib/store";
 
 export const metadata: Metadata = {
-  title: "Gala de Remise de Médailles — 2024",
+  title: "Gala de Remise de Médailles",
   description:
     "Application de check-in et de visualisation de salle pour le Gala de Remise de Médailles.",
 };

@@ -96,7 +96,10 @@ function TableDetailModal({ table, onClose }: ModalProps) {
           </h2>
           {hotesse ? (
             <p className="mt-2 text-xs text-amber-200/80">
-              Hôtesse · <span className="font-semibold text-amber-200">{hotesse.nom}</span>
+              Hôtesse ·{" "}
+              <span className="font-semibold text-amber-200">
+                {table.hotesseNom ?? hotesse.nom}
+              </span>
             </p>
           ) : null}
         </div>

@@ -72,7 +72,7 @@ export function PresenceToggle({ isPresent, onToggle, ariaLabel }: Props) {
           isPresent ? "justify-start pl-3 text-amber-950" : "justify-end pr-3 text-slate-400",
         ].join(" ")}
       >
-        {isPresent ? "Présent" : "Absent"}
+        Présent
       </span>
     </button>
   );

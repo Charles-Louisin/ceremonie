@@ -133,7 +133,7 @@ export function InvitesManager() {
                       <span aria-hidden="true">·</span>
                       <span>Hôtesse</span>
                       <span className="font-semibold text-amber-200">
-                        {hotesseInvite.nom}
+                        {table?.hotesseNom ?? hotesseInvite.nom}
                       </span>
                     </>
                   ) : null}

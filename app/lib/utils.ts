@@ -77,6 +77,36 @@ export function splitInvitationName(nom: string, nbPersonnes: number): string[] 
   return Array.from({ length: n }, () => trimmed);
 }
 
+/** Encode le choix précis d'une hôtesse dans le champ `hotesseInviteId` existant. */
+export function encodeHostessInviteId(inviteId: string, personName: string | null): string {
+  const id = inviteId.trim();
+  if (!id) return "";
+  const name = personName?.trim();
+  if (!name) return id;
+  return `${id}::${encodeURIComponent(name)}`;
+}
+
+/** Décode `hotesseInviteId` en ID d'invitation + nom précis optionnel. */
+export function decodeHostessInviteId(value: string | null | undefined): {
+  inviteId: string | null;
+  personName: string | null;
+} {
+  if (!value) return { inviteId: null, personName: null };
+  const raw = value.trim();
+  if (!raw) return { inviteId: null, personName: null };
+  const sep = raw.indexOf("::");
+  if (sep < 0) return { inviteId: raw, personName: null };
+  const inviteId = raw.slice(0, sep).trim();
+  const encodedName = raw.slice(sep + 2);
+  let personName: string | null = null;
+  try {
+    personName = decodeURIComponent(encodedName).trim() || null;
+  } catch {
+    personName = encodedName.trim() || null;
+  }
+  return { inviteId: inviteId || null, personName };
+}
+
 export function makeUid(prefix = "id"): string {
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
 }

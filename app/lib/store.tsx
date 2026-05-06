@@ -60,7 +60,7 @@ function reducer(state: InternalState, action: Action): InternalState {
         invites: state.invites.filter((g) => g.id !== action.inviteId),
         tables: state.tables.map((t) =>
           t.hotesseInviteId === action.inviteId
-            ? { ...t, hotesseInviteId: null }
+            ? { ...t, hotesseInviteId: null, hotesseNom: null }
             : t,
         ),
       };
@@ -263,6 +263,7 @@ export function GalaProvider({ children }: { children: React.ReactNode }) {
         nom: input.nom,
         capacite: input.capacite ?? TABLE_CAPACITY,
         hotesseInviteId: input.hotesseInviteId ?? null,
+        hotesseNom: input.hotesseNom ?? null,
       };
       return runOptimistic<TableGala>({
         optimistic: () => dispatch({ type: "UPSERT_TABLE", table: draft }),
@@ -272,6 +273,7 @@ export function GalaProvider({ children }: { children: React.ReactNode }) {
                 nom: draft.nom,
                 capacite: draft.capacite,
                 hotesseInviteId: draft.hotesseInviteId,
+                hotesseNom: draft.hotesseNom,
               })
             : api.createTable(draft),
         onSuccess: (server) =>

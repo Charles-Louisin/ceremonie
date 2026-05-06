@@ -4,9 +4,12 @@ import { useMemo, useState } from "react";
 import { Sparkles, X } from "lucide-react";
 import { useGala } from "../../lib/store";
 import type { Invite, TableGala } from "../../lib/types";
+import { splitInvitationName } from "../../lib/utils";
 
 interface HostessGroup {
+  id: string;
   hotesse: Invite;
+  displayName: string;
   tables: TableGala[];
 }
 
@@ -21,7 +24,19 @@ export function HostessesManager() {
 
   /** Toutes les invitations, candidates valides pour devenir hôtesse. */
   const allCandidates = useMemo(
-    () => [...state.invites].sort((a, b) => a.nom.localeCompare(b.nom)),
+    () =>
+      [...state.invites]
+        .flatMap((g) => {
+          const names = splitInvitationName(g.nom, g.nbPersonnes ?? 1);
+          return names.map((name, index) => ({
+            key: `${g.id}::${index}`,
+            inviteId: g.id,
+            name,
+            fullName: g.nom,
+            tableId: g.tableId,
+          }));
+        })
+        .sort((a, b) => a.name.localeCompare(b.name)),
     [state.invites],
   );
 
@@ -32,28 +47,30 @@ export function HostessesManager() {
       if (!t.hotesseInviteId) continue;
       const hotesse = state.invites.find((g) => g.id === t.hotesseInviteId);
       if (!hotesse) continue;
-      const existing = map.get(hotesse.id);
+      const displayName = t.hotesseNom ?? hotesse.nom;
+      const groupId = `${hotesse.id}::${displayName}`;
+      const existing = map.get(groupId);
       if (existing) {
         existing.tables.push(t);
       } else {
-        map.set(hotesse.id, { hotesse, tables: [t] });
+        map.set(groupId, { id: groupId, hotesse, displayName, tables: [t] });
       }
     }
     return Array.from(map.values()).sort((a, b) =>
-      a.hotesse.nom.localeCompare(b.hotesse.nom),
+      a.displayName.localeCompare(b.displayName),
     );
   }, [sortedTables, state.invites]);
 
-  function assignHostessToTable(hotesseId: string, tableId: string) {
+  function assignHostessToTable(hotesseId: string, hostessName: string, tableId: string) {
     const t = state.tables.find((x) => x.id === tableId);
     if (!t) return;
-    upsertTable({ ...t, hotesseInviteId: hotesseId });
+    upsertTable({ ...t, hotesseInviteId: hotesseId, hotesseNom: hostessName });
   }
 
   function removeHostessFromTable(tableId: string) {
     const t = state.tables.find((x) => x.id === tableId);
     if (!t) return;
-    upsertTable({ ...t, hotesseInviteId: null });
+    upsertTable({ ...t, hotesseInviteId: null, hotesseNom: null });
   }
 
   return (
@@ -82,14 +99,14 @@ export function HostessesManager() {
             <ul className="space-y-3">
               {groups.map((g) => (
                 <HostessRow
-                  key={g.hotesse.id}
+                  key={g.id}
                   group={g}
                   allTables={sortedTables}
-                  isAdding={adding === g.hotesse.id}
-                  onStartAdd={() => setAdding(g.hotesse.id)}
+                  isAdding={adding === g.id}
+                  onStartAdd={() => setAdding(g.id)}
                   onCancelAdd={() => setAdding(null)}
                   onAssign={(tableId) => {
-                    assignHostessToTable(g.hotesse.id, tableId);
+                    assignHostessToTable(g.hotesse.id, g.displayName, tableId);
                     setAdding(null);
                   }}
                   onRemove={(tableId) => removeHostessFromTable(tableId)}
@@ -130,23 +147,47 @@ export function HostessesManager() {
                     ) : null}
                   </div>
                   <select
-                    value={hotesse?.id ?? ""}
+                    value={
+                      hotesse
+                        ? allCandidates.find(
+                            (c) =>
+                              c.inviteId === hotesse.id &&
+                              c.name === (t.hotesseNom ?? hotesse.nom),
+                          )?.key ??
+                          allCandidates.find((c) => c.inviteId === hotesse.id)?.key ??
+                          ""
+                        : ""
+                    }
                     onChange={(e) =>
-                      upsertTable({
-                        ...t,
-                        hotesseInviteId: e.target.value || null,
-                      })
+                      upsertTable(
+                        e.target.value
+                          ? {
+                              ...t,
+                              hotesseInviteId:
+                                allCandidates.find((c) => c.key === e.target.value)
+                                  ?.inviteId ?? null,
+                              hotesseNom:
+                                allCandidates.find((c) => c.key === e.target.value)
+                                  ?.name ?? null,
+                            }
+                          : {
+                              ...t,
+                              hotesseInviteId: null,
+                              hotesseNom: null,
+                            },
+                      )
                     }
                     className="luxe-input mt-2 text-sm"
                   >
                     <option value="">— Aucune hôtesse —</option>
-                    {allCandidates.map((g) => {
+                    {allCandidates.map((c) => {
                       const homeTable = state.tables.find(
-                        (x) => x.id === g.tableId,
+                        (x) => x.id === c.tableId,
                       );
                       return (
-                        <option key={g.id} value={g.id}>
-                          {g.nom}
+                        <option key={c.key} value={c.key}>
+                          {c.name}
+                          {c.name !== c.fullName ? ` (${c.fullName})` : ""}
                           {homeTable
                             ? ` — assis Table ${homeTable.nom}`
                             : " — sans table"}
@@ -191,7 +232,7 @@ function HostessRow({
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate text-sm font-semibold text-amber-100">
-            {group.hotesse.nom}
+            {group.displayName}
           </p>
           <p className="mt-0.5 text-[11px] uppercase tracking-wider text-amber-200/70">
             {group.tables.length} table{group.tables.length > 1 ? "s" : ""}

@@ -179,7 +179,7 @@ function InviteRow({ invite, onToggle }: RowProps) {
                     : "font-semibold text-amber-200"
                 }
               >
-                {hotesse.nom}
+                {table?.hotesseNom ?? hotesse.nom}
               </span>
             </>
           ) : null}

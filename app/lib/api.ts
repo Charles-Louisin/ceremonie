@@ -47,6 +47,7 @@ export const api = {
     nom: string;
     capacite?: number;
     hotesseInviteId?: ID | null;
+    hotesseNom?: string | null;
   }) =>
     request<TableGala>("/api/tables", {
       method: "POST",

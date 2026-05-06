@@ -208,6 +208,7 @@ export function buildSeed(): GalaState {
       nom: data.nom,
       capacite: data.invitations.reduce((sum, i) => sum + i.nbPersonnes, 0),
       hotesseInviteId: null,
+      hotesseNom: null,
     };
 
     data.invitations.forEach((inv, iIndex) => {
@@ -225,6 +226,7 @@ export function buildSeed(): GalaState {
     const firstInvite = invites.find((g) => g.tableId === tableId);
     if (firstInvite) {
       table.hotesseInviteId = firstInvite.id;
+      table.hotesseNom = firstInvite.nom;
     }
 
     tables.push(table);

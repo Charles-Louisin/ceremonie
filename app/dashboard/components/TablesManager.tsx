@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Pencil, Plus, Trash2, X, Check } from "lucide-react";
 import { useGala } from "../../lib/store";
 import { TABLE_CAPACITY, type TableGala } from "../../lib/types";
+import { splitInvitationName } from "../../lib/utils";
 
 export function TablesManager() {
   const { state, upsertTable, deleteTable } = useGala();
@@ -49,6 +50,7 @@ export function TablesManager() {
             nom: "",
             capacite: TABLE_CAPACITY,
             hotesseInviteId: null,
+            hotesseNom: null,
           }}
         />
       ) : null}
@@ -94,7 +96,8 @@ export function TablesManager() {
                   Table <span className="text-amber-300">{t.nom}</span>
                 </p>
                 <p className="mt-0.5 text-[11px] text-amber-100/60">
-                  {count}/{t.capacite} personnes · Hôtesse : {hotesse ? hotesse.nom : "—"}
+                  {count}/{t.capacite} personnes · Hôtesse :{" "}
+                  {t.hotesseNom ?? hotesse?.nom ?? "—"}
                   {otherTables > 0 ? (
                     <span className="ml-1 rounded-full bg-amber-400/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-300">
                       + {otherTables} autre{otherTables > 1 ? "s" : ""}
@@ -160,10 +163,32 @@ function TableForm({
   const [hotesseInviteId, setHotesseInviteId] = useState<string | null>(
     initial.hotesseInviteId,
   );
-
-  const candidatesHotesse = [...state.invites].sort((a, b) =>
-    a.nom.localeCompare(b.nom),
+  const [hotesseNom, setHotesseNom] = useState<string | null>(
+    initial.hotesseNom,
   );
+
+  const candidatesHotesse = [...state.invites]
+    .flatMap((g) => {
+      const names = splitInvitationName(g.nom, g.nbPersonnes ?? 1);
+      return names.map((name, index) => ({
+        key: `${g.id}::${index}`,
+        inviteId: g.id,
+        name,
+        fullName: g.nom,
+        tableId: g.tableId,
+      }));
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  function currentSelectValue(): string {
+    if (!hotesseInviteId) return "";
+    const exact = candidatesHotesse.find(
+      (c) => c.inviteId === hotesseInviteId && c.name === hotesseNom,
+    );
+    if (exact) return exact.key;
+    const first = candidatesHotesse.find((c) => c.inviteId === hotesseInviteId);
+    return first?.key ?? "";
+  }
 
   return (
     <form
@@ -175,6 +200,7 @@ function TableForm({
           nom: nom.trim(),
           capacite,
           hotesseInviteId,
+          hotesseNom,
         });
       }}
     >
@@ -206,16 +232,26 @@ function TableForm({
         <label className="text-xs text-amber-100/70 sm:col-span-3">
           Hôtesse
           <select
-            value={hotesseInviteId ?? ""}
-            onChange={(e) => setHotesseInviteId(e.target.value || null)}
+            value={currentSelectValue()}
+            onChange={(e) => {
+              if (!e.target.value) {
+                setHotesseInviteId(null);
+                setHotesseNom(null);
+                return;
+              }
+              const selected = candidatesHotesse.find((c) => c.key === e.target.value);
+              setHotesseInviteId(selected?.inviteId ?? null);
+              setHotesseNom(selected?.name ?? null);
+            }}
             className="luxe-input mt-1 text-sm"
           >
             <option value="">— Aucune —</option>
-            {candidatesHotesse.map((g) => {
-              const t = state.tables.find((x) => x.id === g.tableId);
+            {candidatesHotesse.map((c) => {
+              const t = state.tables.find((x) => x.id === c.tableId);
               return (
-                <option key={g.id} value={g.id}>
-                  {g.nom}
+                <option key={c.key} value={c.key}>
+                  {c.name}
+                  {c.name !== c.fullName ? ` (${c.fullName})` : ""}
                   {t ? ` — assis Table ${t.nom}` : " — sans table"}
                 </option>
               );

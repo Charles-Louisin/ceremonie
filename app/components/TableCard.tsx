@@ -78,7 +78,7 @@ export function TableCard({ table, onClick, compact = false }: Props) {
         <TableSvg
           tableId={table.id}
           tableName={table.nom}
-          hotesseNom={hotesse?.nom ?? null}
+          hotesseNom={table.hotesseNom ?? hotesse?.nom ?? null}
           seats={seats}
           isActive={isActive}
         />
@@ -92,7 +92,9 @@ export function TableCard({ table, onClick, compact = false }: Props) {
           ].join(" ")}
         >
           <span className="truncate">
-            {hotesse ? `Hôtesse · ${shortName(hotesse.nom)}` : "Sans hôtesse"}
+            {hotesse
+              ? `Hôtesse · ${shortName(table.hotesseNom ?? hotesse.nom)}`
+              : "Sans hôtesse"}
           </span>
           {hotesseExtraTables > 0 ? (
             <span
@@ -230,7 +232,7 @@ function TableSvg({
       >
         Hôtesse
       </text>
-      <text
+    <text
         x={cx}
         y={cy + 19}
         textAnchor="middle"

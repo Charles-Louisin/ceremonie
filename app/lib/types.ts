@@ -16,6 +16,8 @@ export interface TableGala {
   capacite: number;
   /** ID de l'invité désigné comme hôtesse pour cette table. */
   hotesseInviteId: ID | null;
+  /** Nom affiché de l'hôtesse (personne précise) persistant en base. */
+  hotesseNom: string | null;
 }
 
 export interface GalaState {

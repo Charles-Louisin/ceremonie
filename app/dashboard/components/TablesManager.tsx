@@ -146,6 +146,7 @@ interface TableFormValues {
   nom: string;
   capacite: number;
   hotesseInviteId: string | null;
+  hotesseNom: string | null;
 }
 
 function TableForm({

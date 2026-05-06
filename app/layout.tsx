@@ -1,19 +1,7 @@
 import type { Metadata } from "next";
-import { Cinzel, Inter } from "next/font/google";
+import type { CSSProperties } from "react";
 import "./globals.css";
 import { GalaProvider } from "./lib/store";
-
-const cinzel = Cinzel({
-  variable: "--font-cinzel",
-  weight: ["400", "500", "600", "700"],
-  subsets: ["latin"],
-});
-
-const inter = Inter({
-  variable: "--font-inter",
-  weight: ["300", "400", "500", "600", "700"],
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Gala de Remise de Médailles — 2024",
@@ -29,7 +17,13 @@ export default function RootLayout({
   return (
     <html
       lang="fr"
-      className={`${cinzel.variable} ${inter.variable} h-full antialiased`}
+      className="h-full antialiased"
+      style={
+        {
+          "--font-cinzel": '"Playfair Display", ui-serif, Georgia, serif',
+          "--font-inter": 'ui-sans-serif, system-ui, sans-serif',
+        } as CSSProperties
+      }
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
